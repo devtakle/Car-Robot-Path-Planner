@@ -6,6 +6,7 @@ from pygame.locals import *
 from math import *
 from tree import Tree
 from robot import Robot, Rectangle
+"""PyGame window"""
 pygame.init()
 XDIM = 250
 YDIM = 250
@@ -33,7 +34,7 @@ obs = [obs1,obs2,obs3]
 
 pygame.display.update()
 clock = pygame.time.Clock()
-        
+
 """Control System Constraints"""
 def derivative(state, fi):
     xDot = speed*cos(state[2])*cos(fi)
@@ -41,7 +42,7 @@ def derivative(state, fi):
     thetaDot = (0.8)*sin(fi)  #speed/length * sin(fi)
     return np.array([xDot,yDot,thetaDot])
 
-"""Euclidean Distance between states"""    
+"""Euclidean Distance between states"""
 def euclid_dist(p1,p2):
     #+(p1[2]-p2[2])*(p1[2]-p2[2])
     return sqrt((p1[0]-p2[0])*(p1[0]-p2[0])+(p1[1]-p2[1])*(p1[1]-p2[1]))
@@ -56,13 +57,13 @@ def runge_kutta(point, fi):
     result = point + increment
     return result
 
-"""Draw the car give the center of its rectangular frame"""    
+"""Draw the car given the state"""
 def draw_car(state,fill = 0):
     car_init = Robot(state[0],state[1],state[2],15,10)
     car_rec_init = car_init.getRectangle()
     pygame.draw.polygon(screen,blue,[car_rec_init.get_point(1), car_rec_init.get_point(0), car_rec_init.get_point(2), car_rec_init.get_point(3)],fill)
     pygame.display.update()
-    
+
 """Extend from input state to nearest state in the tree"""
 def extend(state, tree):
     nearest_state = tree.get_closest(state)
@@ -79,9 +80,9 @@ def extend(state, tree):
         pygame.draw.line(screen,black,(nearest_state[0],nearest_state[1]),(opt_state[0],opt_state[1]),1)
         pygame.display.update()
         tree.insert(opt_state, nearest_state)
-    
+
         return opt_state
- 
+
 """Try a range of values of fi to get the optimum next state"""
 def opt_input(from_state, to_state):
     opt_dist = 999999
@@ -108,19 +109,19 @@ def draw_path(goal_state,tree):
         pygame.display.update()
         goal_state = parent
         parent = tree.get_parent(goal_state)
-                
 
-def planner(): 
+
+def planner():
     tree = Tree()
     draw_car(initial_state)
-    
+
     tree.insert(initial_state, np.array([]))
 #    pygame.draw.line(screen,blue,(point[0],point[1]),(final_state[0],final_state[1]),2)
     pygame.display.update()
     for i in range (EPOCH):
          rand = np.array([random.uniform(15,235), random.uniform(15,235), random.uniform(math.radians(0),math.radians(360))])
          opt_state = extend(rand,tree)
-         
+
          if(opt_state is not None and euclid_dist(opt_state,final_state) < 5):
              print "reached at ",i,"th iteration"
              goal_state = opt_state
@@ -128,13 +129,13 @@ def planner():
              draw_path(goal_state,tree)
              break
     draw_car(final_state)
+    """save result to an image"""
     string = np.array_str(initial_state)+ ' to ' +np.array_str(final_state)+'.png'
-    print string
     pygame.image.save(screen, string)
     print "end"
 def main():
     planner()
-    
+
 if __name__ == '__main__':
     main()
     running = True
@@ -143,5 +144,5 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-         
+
     pygame.quit()
