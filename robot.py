@@ -29,7 +29,7 @@ class Robot():
 class Rectangle():
     def __init__(self,points):
         self.points = points
-    """Single Axis Detection Theorem used to check 
+    """Separating Axis Theorem used to check 
        if a rectangle collides with another"""    
     def collides(self,rect):
         axis = np.array([self.get_point(3) - self.get_point(2)

@@ -8,8 +8,8 @@ from tree import Tree
 from robot import Robot, Rectangle
 """PyGame window"""
 pygame.init()
-XDIM = 250
-YDIM = 250
+XDIM = 260
+YDIM = 260
 WINSIZE = [XDIM, YDIM]
 screen = pygame.display.set_mode(WINSIZE)
 black = (  0,   0,   0)
@@ -18,12 +18,14 @@ red   = (255,   0,   0)
 blue  = (0,   0,   255)
 screen.fill(white)
 pygame.display.update()
+
+
 """PARAMETERS"""
 speed = 12
 length = 15
 width = 10
 initial_state = np.array([200,25,math.radians(60)])
-final_state = np.array([50,200,math.radians(45)])
+final_state = np.array([220,220,math.radians(45)])
 dt = 0.3
 EPOCH  = 5000
 """OBSTACLES"""
@@ -61,7 +63,7 @@ def runge_kutta(point, fi):
 def draw_car(state,fill = 0):
     car_init = Robot(state[0],state[1],state[2],15,10)
     car_rec_init = car_init.getRectangle()
-    pygame.draw.polygon(screen,blue,[car_rec_init.get_point(1), car_rec_init.get_point(0), car_rec_init.get_point(2), car_rec_init.get_point(3)],fill)
+    rect = pygame.draw.polygon(screen,blue,[car_rec_init.get_point(1), car_rec_init.get_point(0), car_rec_init.get_point(2), car_rec_init.get_point(3)],fill)
     pygame.display.update()
 
 """Extend from input state to nearest state in the tree"""
@@ -103,7 +105,7 @@ def draw_path(goal_state,tree):
     i = 1
     while(len(parent) > 0):
         pygame.draw.line(screen,red,(goal_state[0],goal_state[1]),(parent[0],parent[1]),2)
-        if(i%25 == 0):
+        if(i%15 == 0):
             draw_car(goal_state,1)
         i+=1
         pygame.display.update()
@@ -133,6 +135,7 @@ def planner():
     string = np.array_str(initial_state)+ ' to ' +np.array_str(final_state)+'.png'
     pygame.image.save(screen, string)
     print "end"
+
 def main():
     planner()
 
